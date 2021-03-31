@@ -1,0 +1,25 @@
+{
+  "name": "DevOpsFaktury",
+  "version": "1.0.0",
+  "description": "DevOps",
+  "main": "server.js",
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/s14094/DevOpsFaktury.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/s14094/DevOpsFaktury/issues"
+  },
+  "homepage": "https://github.com/s14094/DevOpsFaktury#readme"
+}

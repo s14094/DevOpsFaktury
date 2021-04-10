@@ -2,6 +2,8 @@ FROM node:15
 
 WORKDIR /app
 
-COPY ./ ./
+COPY . .
 
-CMD ["node", "server.js"]
+RUN npm install
+
+CMD ["npm", "start"]

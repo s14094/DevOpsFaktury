@@ -19,7 +19,7 @@ docker exec -it node-server-app bash / docker exec node-server-app npm list
 
 
 docker run --name postgres-docker -e POSTGRES_PASSWORD=admin1 -d -p 4321:5432 postgres
-psql -d postgres -h localhost -p 4321 -U postgres / z maszyny docker exec -it postgres-docker psql -U postgres
+psql -d postgres -h localhost -p 4321 -U postgres / z maszyny docker exec -it devopsfaktury_db_1 psql -U docker
 
 
 docker-compose up --build -d /  docker-compose down

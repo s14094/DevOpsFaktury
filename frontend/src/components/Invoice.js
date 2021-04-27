@@ -7,13 +7,13 @@ const Invoice = ({ invoice, onDelete, onToggle }) => {
       onDoubleClick={() => onToggle(invoice.id)}
     >
       <h3>
-        {invoice.number}{' '}
+        {invoice.id}{' -> '}{invoice.invoice_number}{' '}
         <FaTimes
           style={{ color: 'red', cursor: 'pointer' }}
           onClick={() => onDelete(invoice.id)}
         />
       </h3>
-      <p>{invoice.nip}</p>
+      <p>{invoice.invoice_nip}</p>
     </div>
   )
 }

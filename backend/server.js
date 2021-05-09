@@ -41,15 +41,32 @@ app.put('/invoice/:id', async (req, res) => {
   res.json('updated');
 })
 
-
 app.get('/invoice/:id', async (req, res) => {
   const id = parseInt(req.params.id)
-  const invoices = await db.select().from(globals.TABLE_NAME).where('id', id)
-  res.send(invoices);
+
+  redisClient.get(id, async (err, cacheVal) => {
+    if(!cacheVal){
+      const invoices = await db.select().from(globals.TABLE_NAME).where('id', id)
+      redisClient.set(id, JSON.stringify(invoices))
+      res.send(invoices);
+    } else {
+      res.send(cacheVal);
+    }
+  })
 })
 
 app.post('/invoice', async (req, res) => {
   const invoice = await db(globals.TABLE_NAME).insert({ invoice_number: req.body.number, invoice_nip: req.body.nip }).returning('*')
+  var idd;
+  for(var i = 0; i < invoice.length; i++)
+  {
+    idd = invoice[i]['id'];
+  }
+  const invoiceForCache = {id: idd, invoice_number: req.body.number, invoice_nip: req.body.nip};
+  redisClient.get(idd, async (err, cacheVal) => {
+    if(!cacheVal){
+      redisClient.set(idd, JSON.stringify(invoiceForCache))
+    }});
   res.json(invoice)
 })
 

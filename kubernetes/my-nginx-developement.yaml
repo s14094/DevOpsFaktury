@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-nginx-replicaset
+  labels:
+    component: web
+    app: my-app
+spec:
+  template:
+    metadata:
+      name: myapp-pod
+      labels:
+        component: web
+        app: myapp
+    spec:
+      containers:
+        - name: my-nginx-container
+          image: nginx:apline
+  replicas: 3
+  selector: 
+    matchLabels:
+      app: my-app
+      component: web

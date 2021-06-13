@@ -1,0 +1,32 @@
+{
+  "name": "DevOpsFaktury",
+  "version": "1.0.0",
+  "description": "DevOps",
+  "main": "server.js",
+  "dependencies": {
+    "express": "^4.17.1",
+    "knex": "^0.21.19",
+    "morgan": "^1.10.0",
+    "pg": "^8.5.1",
+    "nodemon": "2.0.7",
+    "redis": "3.1.2",
+    "cors": "2.8.5"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "nodemon server.js",
+    "migrate": "node scripts/migrate.js",
+    "seed": "node scripts/seed.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/s14094/DevOpsFaktury.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/s14094/DevOpsFaktury/issues"
+  },
+  "homepage": "https://github.com/s14094/DevOpsFaktury#readme"
+}

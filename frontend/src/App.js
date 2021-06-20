@@ -59,7 +59,7 @@ function App() {
       headers: {
         'Content-type': 'application/json',
       },
-      body: JSON.stringify({number : "updated " + invoiceToToggle[0].invoice_number}),
+      body: JSON.stringify({number : "updated " + invoiceToToggle.invoice_number}),
     })
 
     const data = await res.json()

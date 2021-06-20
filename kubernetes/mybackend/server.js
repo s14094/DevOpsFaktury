@@ -1,81 +1,86 @@
 const express = require('express')
 const redis = require('redis')
-const globals = require('./globals')
+const cors = require('cors')
+const keys = require('./keys');
 
-
-const db = require('./db')
-
-const PORT = process.env.PORT || 5000
+console.log("5 linijka");
+const PORT = 5000
 const app = express()
-
+console.log("8 linijka");
+const redisClient = redis.createClient({
+  host: keys.redisHost,
+  port: keys.redisPort,
+  retry_strategy: () => 1000
+});
+console.log("13 linijka");
+app.use(cors())
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
-const redisClient = redis.createClient({ host: "redis", port: 6379 })
 
 redisClient.on('connect', () => { console.log('Connected to the Redis server'); })
+console.log("19 linijka");
+const { Pool } = require('pg');
 
+const pgClient = new Pool({
+  user: keys.pgUser,
+  password: keys.pgPassword,
+  database: keys.pgDatabase,
+  host: keys.pgHost,
+  port: keys.pgPort
+});
 
-app.get('/', (req, res) => res.send('Hello World!!!'))
+pgClient.on('error', () => {
+  console.log("Postgres not connected!");
+});
 
-
-app.get('/recreate', async (req, res) => {
-  await db.schema.dropTableIfExists(globals.TABLE_NAME)
-  await db.schema.withSchema('public').createTable(globals.TABLE_NAME, (table) => {
-    table.increments('id')
-    table.string(globals.INV_NUMBER)
-    table.integer(globals.INV_NIP)
-    console.log('recreated db')
-  })
-  res.send();
+pgClient.on('connect', () =>{
+  console.log("Connected to Postgres server!");
+});
+console.log("37 linijka");
+app.listen(PORT,  () => {
+  pgClient.
+  query('CREATE TABLE IF NOT EXISTS invoice (id SERIAL PRIMARY KEY, invoice_number VARCHAR(15), invoice_nip VARCHAR(15));').
+  then(() => {
+    console.log(`Server listening on port ${PORT}`);
+  }).
+  catch((err) => {
+    console.log("Error while creating table\n"+err);
+  });
 })
 
+app.get("/api/check", (req, res) => {
+  res.send("[k8s] API WORKS! (/api)");
+});
 
-app.get('/invoice', async (req, res) => {
-  const invoices = await db.select().from(globals.TABLE_NAME)
-  res.send(invoices);
-})
 
-app.put('/invoice/:id', async (req, res) => {
-  const id = parseInt(req.params.id)
-  const invoice = await db(globals.TABLE_NAME).where({ id: id }).update({ invoice_number: req.body.number }, ['id', globals.INV_NUMBER, globals.INV_NIP]).returning('*')
-  res.json('updated');
-})
-
-app.get('/invoice/:id', async (req, res) => {
-  const id = parseInt(req.params.id)
-
-  redisClient.get(id, async (err, cacheVal) => {
-    if(!cacheVal){
-      const invoices = await db.select().from(globals.TABLE_NAME).where('id', id)
-      redisClient.set(id, JSON.stringify(invoices))
-      res.send(invoices);
+app.get("/api/invoice", (req, res) => {
+  redisClient.get('cached_operations', (err, result) => {
+    if (!result) {
+      pgClient.
+      query('SELECT * FROM invoice;').
+      then(result => {
+        res.status(200).json(result.rows)
+      }).
+      catch((err) => {
+        res.send(err);
+      });
     } else {
-      res.send(cacheVal);
+      console.log('Found cached_operations in Redis Client');
+      res.send(result);
     }
-  })
+  });
 })
 
-app.post('/invoice', async (req, res) => {
-  const invoice = await db(globals.TABLE_NAME).insert({ invoice_number: req.body.number, invoice_nip: req.body.nip }).returning('*')
-  var idd;
-  for(var i = 0; i < invoice.length; i++)
-  {
-    idd = invoice[i]['id'];
-  }
-  const invoiceForCache = {id: idd, invoice_number: req.body.number, invoice_nip: req.body.nip};
-  redisClient.get(idd, async (err, cacheVal) => {
-    if(!cacheVal){
-      redisClient.set(idd, JSON.stringify(invoiceForCache))
-    }});
-  res.json(invoice)
+app.post("/api/invoice",  (req, res) => {
+  const { value, currency } = req.body
+  pgClient.
+  query('INSERT INTO invoice (value, currency) VALUES ($1, $2) RETURNING id;', [value, currency]).
+  then(result => {
+    const id = result.rows[0].id;
+    addToCache(id, value, currency);
+    res.status(200).json(result.rows[0].id)
+  }).
+  catch((err) => {
+    res.send(err);
+  });
 })
-
-app.del('/invoice/:id', async (req, res) => {
-  const id = parseInt(req.params.id)
-  await db(globals.TABLE_NAME).where({ id: id }).del()
-  res.json('deleted');
-})
-
-
-
-app.listen(PORT, () => console.log(`Server up at http://localhost:${PORT}`))

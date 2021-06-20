@@ -1,4 +1,3 @@
-import logo from './logo.svg';
 import './App.css';
 import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Route } from 'react-router-dom'
@@ -12,7 +11,7 @@ function App() {
   const URL = 'http://localhost/api'
 
   useEffect(() => {
-    refreshList()
+    // refreshList()
   }, [])
 
   const fetchInvoices = async () => {
@@ -54,15 +53,13 @@ function App() {
 
   const updateInvoice = async (id) => {
     const invoiceToToggle = await fetchInvoice(id)
-    const res = await fetch(URL + `/invoice/${id}`, {
+    await fetch(URL + `/invoice/${id}`, {
       method: 'PUT',
       headers: {
         'Content-type': 'application/json',
       },
       body: JSON.stringify({number : "updated " + invoiceToToggle[0].invoice_number}),
     })
-
-    const data = await res.json()
 
     refreshList()
   }

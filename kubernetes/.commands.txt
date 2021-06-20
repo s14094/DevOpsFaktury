@@ -17,6 +17,8 @@ kubectl apply -f myfrontend-node-port.yml
 kubectl get deploy
 kubectl get pods
 
+# kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v0.47.0/deploy/static/provider/cloud/deploy.yaml
+
 kubectl delete services --all
 kubectl delete configMaps --all
 kubectl delete deployments --all

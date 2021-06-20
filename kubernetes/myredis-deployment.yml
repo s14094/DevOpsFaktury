@@ -1,23 +1,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: backendlb-deployment
+  name: myredis-deployment
   labels:
-    component: backend
     app: app
+    type: cache
+
 spec:
   template:
     metadata:
-      name: backendlb-pod
+      name: myredis-pod
       labels:
-        component: backend
         app: app
+        type: cache
     spec:
       containers:
-        - name: backendlb-container
-          image: kickd/backend
+        - name: myredis-container
+          image: redis:alpine
   replicas: 3
   selector:
     matchLabels:
       app: app
-      component: backend
+      type: cache

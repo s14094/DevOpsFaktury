@@ -37,7 +37,70 @@ npx create-react-app myfrontend
 docker-compose up
 
 
+docker version
+docker run ...
+docker run -it alpine /bin/sh
+docker ps # wysietla uruchomione kontenery
+docker ps -a # wyswietla wszystkie kontenery
+docker stop CONTAINER ID
+docker start CONTAINER_ID
+docker system prune # czysci kontenery zatrzymane
+docker image prune # czysci nieuzywane obrazy
+docker images -a
+docker exec -it CONTAINER_ID sh
+docker build . # buduje z Dockerfile
+docker network ls
+docker network rm CONTAINER_ID
+docker network inspect mymulticont
+docker network create mymulticont
+docker run --rm --name myalpine1 --network mymulticont -d alpine sleep 3000
+docker run --name=myredis --network mymulticont --rm redis:alpine
+docker container rm myalpine1
 
+docker push kickd/mywebapp:latest
+docker push kickd/devops:latest
 
+image - plik binarny, fragment filesystemu
+kontener - proces
 
-Redis is an open source (BSD licensed), in-memory data structure store, used as a database, cache, and message broker.
+npm init -y
+
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+& 'C:\Program Files\Docker\Docker\DockerCli.exe' -SwitchDaemon
+yarn init -y
+yarn add express redis pg body-parser cors nodemon
+
+docker build -t kickd/devops:latest . # budowanie i nadawanie nazwy
+docker build . -t kickd/mybackend
+docker run -p 8090:9090 kickd/devops # startowanie i mapowanie portow
+docker run --rm --network=mymulticont kickd/mybackend
+
+# podlaczanie dysku
+docker run -v C:\Users\Gorlist\Desktop\Semestr4\DevOps\webapp\postgresdata:/var/lib/postgresql/data --rm --name mypostgres --network=mymulticont -e POSTGRES_PASSWORD=1qaz2wsx postgres:alpine
+
+docker build . -t kickd/mybackend:latest
+docker run -p 8090:5000 --rm --network=mymulticont --name mybackend kickd/mybackend
+
+docker-compose up
+docker-compose up --build
+docker-compose down
+docker-compose stop
+
+kubernetes:
+kubectl cluster-info # czy dziala
+kubectl get pods
+kubectl --namespace=kube-system get pods
+kubectl get pods -n ingress-nginx
+kubectl apply -f my-nginx-pod.yaml # stworz
+kubectl create -f my-nginx-pod.yaml # tez stworz, ale inaczej?
+kubectl describe pod my-nginx-pod # zajrzyj do srodka
+kubectl describe pv
+kubectl describe cm
+kubectl delete pod my-nginx-pod
+kubectl delete ...
+kubectl get service
+kubectl get deploy
+kubectl get rs
+kubectl scale --replicas=7 -f my-nginx-replicaset.yaml
+kubectl scale --replicas=3 rs my-nginx-replicaset
+kubectl exec -it CONTAINER_ID -- sh

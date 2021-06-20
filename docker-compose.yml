@@ -17,6 +17,7 @@ services:
     build: 
       dockerfile: Dockerfile.dev
       context: ./backend
+    image: kickd/mybackend:docker
     volumes:
       - /opt/app/node_modules
       - ./backend:/opt/app
@@ -30,6 +31,7 @@ services:
     build: 
       dockerfile: Dockerfile.dev
       context: ./frontend
+    image: kickd/myfrontend:docker
     volumes:
       - /opt/app/node_modules
       - ./frontend:/opt/app

@@ -7,4 +7,5 @@ metadata:
 data:
   PGDATABASE: myappdb
   PGUSER: myappuser
-  PGHOSt: mypostgres-clusterip
+  PGHOST: mypostgres-clusterip
+  PGPORT: "5432"

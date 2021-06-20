@@ -1,30 +1,31 @@
 apiVersion: apps/v1
 kind: Deployment
+
 metadata:
-  name: postgres-deployment
+  name: mypostgres-deployment
   labels:
-    app: mypostgres
+    app: app
     type: db
+
 spec:
   template:
     metadata:
       name: mypostgres-pod
       labels:
-        app: mypostgres
+        app: app
         type: db
     spec:
       containers:
-        - name: my-postgres-container
+        - name: mypostgres-container
           image: postgres:alpine
           volumeMounts:
             - mountPath: /var/lib/postgresql/data
               name: postgresvolume
-              subPath: postgres
           env:
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: myapp-secret
+                  name: mypostgres-secret
                   key: PGPASSWORD
             - name: POSTGRES_DB
               valueFrom:
@@ -36,14 +37,17 @@ spec:
                 configMapKeyRef:
                   name: mypostgres-config
                   key: PGUSER
-
+            - name: PGHOST
+              valueFrom:
+                configMapKeyRef:
+                  name: mypostgres-config
+                  key: PGHOST
       volumes:
         - name: postgresvolume
           persistentVolumeClaim:
-            claimName: postgres-pvc
-                            
+            claimName: mypostgres-pvc
   replicas: 1
   selector:
     matchLabels:
-      app:  mypostgres
+      app: app
       type: db
